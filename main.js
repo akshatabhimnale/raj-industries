@@ -8,12 +8,11 @@ document.addEventListener('DOMContentLoaded', () => {
     initScrollAnimations();
     initStatsCounter();
     initScrollTopButton();
-    initInfiniteCarousels(); // 🔥 NEW (NO GAP CAROUSEL)
 });
 
 /* ------------------------------------------
    Header: scroll effect + mobile menu
------------------------------------------- */
+   ------------------------------------------ */
 function initHeader() {
     const header = document.querySelector('.site-header');
     const hamburger = document.querySelector('.hamburger');
@@ -21,14 +20,21 @@ function initHeader() {
 
     if (!header) return;
 
+    // Scroll effect
     window.addEventListener('scroll', () => {
-        header.classList.toggle('scrolled', window.scrollY > 50);
+        if (window.scrollY > 50) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
     });
 
+    // Trigger on load in case page is already scrolled
     if (window.scrollY > 50) {
         header.classList.add('scrolled');
     }
 
+    // Mobile menu toggle
     if (hamburger && overlay) {
         hamburger.addEventListener('click', () => {
             const isActive = hamburger.classList.toggle('active');
@@ -36,6 +42,7 @@ function initHeader() {
             document.body.style.overflow = isActive ? 'hidden' : '';
         });
 
+        // Close menu when clicking a link
         overlay.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
                 hamburger.classList.remove('active');
@@ -48,7 +55,7 @@ function initHeader() {
 
 /* ------------------------------------------
    Hero Carousel
------------------------------------------- */
+   ------------------------------------------ */
 function initHeroCarousel() {
     const hero = document.querySelector('.hero');
     if (!hero) return;
@@ -69,9 +76,11 @@ function initHeroCarousel() {
         if (isTransitioning || index === current) return;
         isTransitioning = true;
 
+        // Fade out text
         if (heroText) heroText.classList.add('transitioning');
 
         setTimeout(() => {
+            // Switch slides
             slides[current].classList.remove('active');
             indicators[current]?.classList.remove('active');
 
@@ -80,6 +89,7 @@ function initHeroCarousel() {
             slides[current].classList.add('active');
             indicators[current]?.classList.add('active');
 
+            // Update text content
             updateHeroText(current);
 
             setTimeout(() => {
@@ -95,6 +105,7 @@ function initHeroCarousel() {
         const slide = slides[index];
         const category = slide.dataset.category || '';
         const headline = slide.dataset.headline || '';
+        const cta = slide.dataset.cta || 'Find out more';
         const href = slide.dataset.href || '#';
 
         const catEl = heroText?.querySelector('.hero-text__category');
@@ -119,19 +130,22 @@ function initHeroCarousel() {
         autoplayTimer = setInterval(next, 6000);
     }
 
-    prevBtn?.addEventListener('click', prev);
-    nextBtn?.addEventListener('click', next);
+    // Button listeners
+    if (prevBtn) prevBtn.addEventListener('click', prev);
+    if (nextBtn) nextBtn.addEventListener('click', next);
 
+    // Indicator listeners
     indicators.forEach((btn, i) => {
         btn.addEventListener('click', () => goTo(i));
     });
 
+    // Start autoplay
     resetAutoplay();
 }
 
 /* ------------------------------------------
    Scroll-triggered Animations
------------------------------------------- */
+   ------------------------------------------ */
 function initScrollAnimations() {
     const elements = document.querySelectorAll('.scroll-animate, .scroll-animate-right, .product-home-card, .stat-item, .value-card');
 
@@ -140,6 +154,7 @@ function initScrollAnimations() {
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
+                // Respect data-delay for staggering
                 const delay = entry.target.dataset.delay || 0;
                 setTimeout(() => {
                     entry.target.classList.add('visible');
@@ -154,7 +169,7 @@ function initScrollAnimations() {
 
 /* ------------------------------------------
    Stats Counter Animation
------------------------------------------- */
+   ------------------------------------------ */
 function initStatsCounter() {
     const statNumbers = document.querySelectorAll('.stat-item__number[data-target]');
     if (statNumbers.length === 0) return;
@@ -192,60 +207,20 @@ function animateCounter(el, target, suffix) {
 
 /* ------------------------------------------
    Scroll to Top Button
------------------------------------------- */
+   ------------------------------------------ */
 function initScrollTopButton() {
     const btn = document.querySelector('.scroll-top-btn');
     if (!btn) return;
 
     window.addEventListener('scroll', () => {
-        btn.classList.toggle('visible', window.scrollY > 400);
+        if (window.scrollY > 400) {
+            btn.classList.add('visible');
+        } else {
+            btn.classList.remove('visible');
+        }
     });
 
     btn.addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-}
-
-/* ------------------------------------------
-   🔥 Infinite Logo Carousel (NO GAP)
------------------------------------------- */
-function initInfiniteCarousels() {
-    const tracks = document.querySelectorAll('.carousel-track');
-
-    tracks.forEach(track => {
-        const items = Array.from(track.children);
-
-        // Clone items for seamless loop
-        items.forEach(item => {
-            track.appendChild(item.cloneNode(true));
-        });
-
-        let position = 0;
-        const speed = 0.4;
-
-        const isReverse = track.classList.contains('right');
-
-        // 🔥 FIX: start from half width (no blank space)
-        const startOffset = track.scrollWidth /2;
-        position = startOffset;
-
-        function animate() {
-            position += speed;
-
-            if (isReverse) {
-                track.style.transform = `translateX(${position}px)`;
-            } else {
-                track.style.transform = `translateX(-${position}px)`;
-            }
-
-            // Reset smoothly
-            if (position >= track.scrollWidth) {
-                position = startOffset;
-            }
-
-            requestAnimationFrame(animate);
-        }
-
-        animate();
     });
 }
