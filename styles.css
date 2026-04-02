@@ -1727,7 +1727,7 @@ ul {
 }
 
 .cable-feature-container {
-    max-width: 900px;
+    max-width: 100%;
     margin: 0 auto 60px;
     padding: 0 8%;
     text-align: center;
@@ -1754,7 +1754,7 @@ ul {
     font-size: 15px;
     color: var(--color-slate-500);
     line-height: 1.8;
-    max-width: 680px;
+    max-width: 100%;
     margin: 0 auto;
     text-align: left;
 }
@@ -2126,9 +2126,9 @@ ul {
 
 /* Image consistency */
 .carousel-track img {
-    width: 200px;
-    flex-shrink: 0;
-    display: block;
+    width: auto;
+    height: 60px;
+    object-fit: contain;
 }
 
 /* LEFT SCROLL */
